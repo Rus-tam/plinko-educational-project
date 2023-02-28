@@ -15,11 +15,19 @@ const labels = tf.tensor([
 ]);
 
 const predictionPoint = tf.tensor([-121, 47]);
+const k = 2;
 
 const result = features
     .sub(predictionPoint)
     .pow(2)
     .sum(1)
     .pow(0.5)
+    .expandDims(1)
+    .concat(labels, 1)
+    .unstack()
+    .sort((a, b) => a.arraySync()[0] > b.arraySync()[0] ? 1 : -1)
+    .slice(0, k)
+    .reduce((acc, pair) => acc + pair.arraySync()[1], 0) / k
 
-result.print()
+// result.print()
+console.log(result)
